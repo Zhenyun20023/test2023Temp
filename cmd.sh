@@ -26,8 +26,8 @@ export JAVA_OPTS="-Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc
 #start Kafka 
 ./bin/pinot-admin.sh  StartKafka -zkAddress=localhost:2191/kafka -port 19092
 
-# create schema and table config; 
-# on UI;  
+# create schema and table config manually on UI
+# enable off-heap on UI table config; 
   "upsertConfig": {
     "mode": "FULL", 
     "metadataManagerClass": "ai.startree.pinot.upsert.rocksdb.RocksDBTableUpsertMetadataManager"
@@ -37,7 +37,11 @@ export JAVA_OPTS="-Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc
     "instanceSelectorType": "strictReplicaGroup"
   },
 
-#drop dead servers; check zookeeper ideal state and external view; controller; 
+
+#drop dead servers; 
+# check zookeeper ideal state and external view; controller; 
+# if needed, edit the zk's ideal state (e.g., segment asignments)
+
 #restart server: 
 querying returning warning aboout unavailable segments. 
 It should have lines with Adding segment and Finished Adding Segment
