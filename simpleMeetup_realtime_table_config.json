@@ -25,8 +25,8 @@
       "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
       "stream.kafka.hlc.zk.connect.string": "zookeeper:2181/kafka",
       "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
-      "stream.kafka.zk.broker.url": "zookeeper:2191/kafka",
-      "stream.kafka.broker.list": "kafka:19092",
+      "stream.kafka.zk.broker.url": "localhost:2191/kafka",
+      "stream.kafka.broker.list": "localhost:19092",
       "realtime.segment.flush.threshold.size": 30,
       "realtime.segment.flush.threshold.rows": 30
     },
@@ -47,6 +47,7 @@
     "instanceSelectorType": "strictReplicaGroup"
   },
   "upsertConfig": {
-    "mode": "FULL"
+    "mode": "FULL", 
+    "metadataManagerClass": "ai.startree.pinot.upsert.rocksdb.RocksDBTableUpsertMetadataManager"
   }
 }

@@ -2,7 +2,7 @@
 
 import random
 
-numKRows = 1*1000  # how many K rows
+numKRows = 2*100  # how many K rows
 upsertPercent = 50 # how many % of the rows are upserting to old rows with same event id ; 
 
 inputFile = "rawdata.simple"
@@ -10,8 +10,6 @@ if numKRows < 1000:
     outputFile = str(numKRows)+"k.json"
 else:
     outputFile = str(numKRows/1000)+"m.json"
-
-    
 
 
 # Open the input file for reading

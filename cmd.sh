@@ -6,12 +6,12 @@ cd /Users/zhenyunzhuang/workspace/startree-pinot/startree-distribution/target/st
 
 #start each component one by one. 
 #zookeeper
-export JAVA_OPTS="-Xms1G -Xmx2G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-zookeper.log"
+export JAVA_OPTS="-Xms1G -Xmx2G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-zookeper.log"; 
 ./bin/pinot-admin.sh StartZookeeper -zkPort 2191
 
 #controller
-export JAVA_OPTS="-Xms1G -Xmx3G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-controller.log"
-./bin/pinot-admin.sh StartController -zkAddress localhost:2191  -controllerPort 9000 -configOverride pinot.controller.startable.class=ai.startree.service.startable.pinot.controller.StarTreePinotControllerStarter
+export JAVA_OPTS="-Xms1G -Xmx3G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-controller.log"; 
+./bin/pinot-admin.sh StartController -zkAddress localhost:2191  -controllerPort 9000 -dataDir /Users/zhenyunzhuang/workspace/startree-pinot/startree-distribution/target/startree-pinot-0.13.0-SNAPSHOT-bin/startree-pinot-0.13.0-SNAPSHOT-bin/dataController -configOverride pinot.controller.startable.class=ai.startree.service.startable.pinot.controller.StarTreePinotControllerStarter
 
 #Broker
 export JAVA_OPTS="-Xms1G -Xmx3G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-broker.log"
@@ -20,13 +20,14 @@ export JAVA_OPTS="-Xms1G -Xmx3G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc
 
 #Server 
 export JAVA_OPTS="-Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc-pinot-server.log"
-./bin/pinot-admin.sh StartServer -zkAddress localhost:2191  -configOverride  pinot.server.startable.class=ai.startree.service.startable.pinot.server.StarTreePinotServerStarter
-
+./bin/pinot-admin.sh StartServer -zkAddress localhost:2191  -dataDir /Users/zhenyunzhuang/workspace/startree-pinot/startree-distribution/target/startree-pinot-0.13.0-SNAPSHOT-bin/startree-pinot-0.13.0-SNAPSHOT-bin/dataServer  -configOverride  pinot.server.startable.class=ai.startree.service.startable.pinot.server.StarTreePinotServerStarter
 
 #start Kafka 
 ./bin/pinot-admin.sh  StartKafka -zkAddress=localhost:2191/kafka -port 19092
 
-# create schema and table config manually on UI
+# create schema and table config  on UI or using command
+./bin/pinot-admin.sh  AddTable  -schemaFile /Users/zhenyunzhuang/workspace/z-tests/pinotUpsert/localMac/simpleMeetup_schema.json -realtimeTableConf /Users/zhenyunzhuang/workspace/z-tests/pinotUpsert/localMac/simpleMeetup_realtime_table_config.json -exec
+
 # enable off-heap on UI table config; 
   "upsertConfig": {
     "mode": "FULL", 
@@ -38,14 +39,24 @@ export JAVA_OPTS="-Xms1G -Xmx4G -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -Xloggc:gc
   },
 
 
-#drop dead servers; 
+#drop dead servers/broker/etc;  
 # check zookeeper ideal state and external view; controller; 
-# if needed, edit the zk's ideal state (e.g., segment asignments)
+# if needed, edit the zk's ideal state (e.g., segment asignments) ; delete segments; 
+# clean the output data directory; 
+# delete pinot-all.log 
 
-#restart server: 
+# delete segments
+POST of /segments/tableName, or UIs Drop Table  
+
+#Stopping the cluster;  
+ ./bin/pinot-admin.sh ShowClusterInfo -clusterName PinotCluster -zkAddress localhost:2191
+ ./bin/pinot-admin.sh StopProcess -server; sleep 10; ./bin/pinot-admin.sh StopProcess -broker; sleep 10; ./bin/pinot-admin.sh StopProcess -controller; sleep 10; ./bin/pinot-admin.sh StopProcess -kafka; sleep 10; ./bin/pinot-admin.sh StopProcess -zooKeeper;  
+
+
+# verifying
 querying returning warning aboout unavailable segments. 
-It should have lines with Adding segment and Finished Adding Segment
-Also, a lot of performance info can be found in rocksdb logs itself. They are dumped every 5 minutes by default.
+pinot server log: It should have lines with Adding segment and Finished Adding Segment
+A lot of performance info can be found in rocksdb logs itself. They are dumped every 5 minutes by default.
 for those you need to check; dataDir/tableName/rocksDB/LOG 
 Async profiler captures cpu time by default. For RocksDB, it is better if we capture wall time to account for IO waits as well
 
@@ -60,3 +71,4 @@ Async profiler captures cpu time by default. For RocksDB, it is better if we cap
 
 #sql query
 select event_id, count(*) from simpleMeetup group by event_id order by count(*) desc limit 10
+
