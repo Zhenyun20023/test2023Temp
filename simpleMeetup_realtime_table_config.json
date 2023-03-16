@@ -4,8 +4,6 @@
   "segmentsConfig": {
     "timeColumnName": "mtime",
     "timeType": "MILLISECONDS",
-    "retentionTimeUnit": "DAYS",
-    "retentionTimeValue": "1",
     "segmentPushType": "APPEND",
     "segmentAssignmentStrategy": "BalanceNumSegmentAssignmentStrategy",
     "schemaName": "simpleMeetup",
@@ -33,7 +31,7 @@
     "segmentPartitionConfig": {
       "columnPartitionMap": {
         "event_id": {
-          "functionName": "Hashcode",
+          "functionName": "Murmur",
           "numPartitions": 2
         }
       }
