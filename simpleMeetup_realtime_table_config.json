@@ -23,7 +23,7 @@
       "stream.kafka.consumer.type": "lowLevel",
       "stream.kafka.topic.name": "simleMeetup",
       "stream.kafka.decoder.class.name": "org.apache.pinot.plugin.stream.kafka.KafkaJSONMessageDecoder",
-      "stream.kafka.hlc.zk.connect.string": "zookeeper:2181/kafka",
+      "stream.kafka.hlc.zk.connect.string": "localhost:2191/kafka",
       "stream.kafka.consumer.factory.class.name": "org.apache.pinot.plugin.stream.kafka20.KafkaConsumerFactory",
       "stream.kafka.zk.broker.url": "localhost:2191/kafka",
       "stream.kafka.broker.list": "localhost:19092",
@@ -48,6 +48,7 @@
   },
   "upsertConfig": {
     "mode": "FULL", 
-    "metadataManagerClass": "ai.startree.pinot.upsert.rocksdb.RocksDBTableUpsertMetadataManager"
+    "metadataManagerClass": "ai.startree.pinot.upsert.rocksdb.RocksDBTableUpsertMetadataManager",
+    "comparisonColumn": "mtime"
   }
 }
